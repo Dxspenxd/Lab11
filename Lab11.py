@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import os
 
 # File paths
 STUDENTS_FILE = "data/students.txt"
@@ -8,33 +9,50 @@ SUBMISSIONS_FILE = "data/submissions.txt"
 # Load data
 def load_students():
     students = {}
-    with open(STUDENTS_FILE, "r") as f:
-        for line in f:
-            parts = line.strip().split()
-            student_id = parts[0]
-            name = " ".join(parts[1:])
-            students[name] = student_id
+    try:
+        with open(STUDENTS_FILE, "r") as f:
+            for line in f:
+                parts = line.strip().split()
+                student_id = parts[0]
+                name = " ".join(parts[1:])
+                students[name] = student_id
+    except FileNotFoundError:
+        print(f"Error: {STUDENTS_FILE} not found. Please ensure the file exists in the 'data' directory.")
+        return {}
     return students
 
 def load_assignments():
     assignments = {}
     id_to_name = {}
-    with open(ASSIGNMENTS_FILE, "r") as f:
-        for line in f:
-            parts = line.strip().split()
-            assignment_id = parts[0]
-            point_value = int(parts[1])
-            name = " ".join(parts[2:])
-            assignments[name] = (assignment_id, point_value)
-            id_to_name[assignment_id] = name
+    try:
+        with open(ASSIGNMENTS_FILE, "r") as f:
+            for line in f:
+                parts = line.strip().split()
+                if len(parts) < 3:
+                    continue  # skip lines that are too short
+                assignment_id = parts[0]
+                try:
+                    point_value = int(parts[1])
+                except ValueError:
+                    continue  # skip lines where point value isn't a number
+                name = " ".join(parts[2:])
+                assignments[name] = (assignment_id, point_value)
+                id_to_name[assignment_id] = name
+    except FileNotFoundError:
+        print(f"Error: {ASSIGNMENTS_FILE} not found. Please ensure the file exists in the 'data' directory.")
+        return {}, {}
     return assignments, id_to_name
 
 def load_submissions():
     submissions = []
-    with open(SUBMISSIONS_FILE, "r") as f:
-        for line in f:
-            student_id, assignment_id, percent = line.strip().split()
-            submissions.append((student_id, assignment_id, float(percent)))
+    try:
+        with open(SUBMISSIONS_FILE, "r") as f:
+            for line in f:
+                student_id, assignment_id, percent = line.strip().split()
+                submissions.append((student_id, assignment_id, float(percent)))
+    except FileNotFoundError:
+        print(f"Error: {SUBMISSIONS_FILE} not found. Please ensure the file exists in the 'data' directory.")
+        return []
     return submissions
 
 # Menu functions
@@ -83,6 +101,7 @@ def assignment_graph(assignment_name, assignments, submissions):
 
 # Main program
 def main():
+    print("Current working directory:", os.getcwd())  # Debug: Show working directory
     students = load_students()
     assignments, id_to_name = load_assignments()
     submissions = load_submissions()
