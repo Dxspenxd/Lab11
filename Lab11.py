@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 
 # Load data from files
@@ -21,12 +22,14 @@ def load_assignments(filepath):
             assignments[name] = {'id': assignment_id, 'points': points}
     return assignments
 
-def load_submissions(filepath):
+def load_submissions(folderpath):
     submissions = {}
-    with open(filepath, 'r') as f:
-        for line in f:
-            student_id, assignment_id, percent = line.strip().split('|')
-            submissions[(student_id, assignment_id)] = float(percent)
+    for filename in os.listdir(folderpath):
+        if filename.endswith('.txt'):
+            with open(os.path.join(folderpath, filename), 'r') as f:
+                for line in f:
+                    student_id, assignment_id, percent = line.strip().split('|')
+                    submissions[(student_id, assignment_id)] = float(percent)
     return submissions
 
 # Helper functions
@@ -65,7 +68,7 @@ def show_histogram(scores):
 def main():
     students = load_students('data/students.txt')
     assignments = load_assignments('data/assignments.txt')
-    submissions = load_submissions('data/6a1d33e0-174d-4ea4-bb39-7383974acc54.txt')
+    submissions = load_submissions('data/submissions')
 
     print("1. Student grade")
     print("2. Assignment statistics")
