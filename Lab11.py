@@ -52,7 +52,7 @@ def get_assignment_scores(assignment_name, assignments, submissions):
     scores = [percent for (sid, aid), percent in submissions.items() if aid == assignment_id]
     return {
         'min': round(min(scores)),
-        'avg': round(sum(scores) / len(scores)),
+        'avg': int(sum(scores) / len(scores)),  # Changed from round to int
         'max': round(max(scores)),
         'scores': scores
     }
